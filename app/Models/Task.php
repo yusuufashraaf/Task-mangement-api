@@ -22,5 +22,13 @@ class Task extends Model
     public function assignee() {
         return $this->belongsTo(User::class, 'assigned_to');
     }
+    protected static function booted()
+    {
+        static::addGlobalScope('tenant', function ($query) {
+            if (app()->has('tenant')) {
+                $query->where('tenant_id', app('tenant')->id);
+            }
+        });
+    }
 
 }
