@@ -18,7 +18,7 @@ class TaskController extends Controller
     if ($user->role === 'member') {
         $query->where(function($q) use ($user){
             $q->where('created_by', $user->id)
-              ->orWhere('assigned_to', $user->id);
+            ->orWhere('assigned_to', $user->id);
         });
     }
 
@@ -54,5 +54,26 @@ public function store(Request $request)
     return $task;
 }
 
+public function show(Task $task)
+{
+        $this->authorize('view', $task);
+    return $task;
+}
+
+
+public function update(Request $request, Task $task)
+{
+        $this->authorize('update', $task);
+        $task->update($request->all());
+    return $task;
+}
+
+
+public function destroy(Task $task)
+{
+        $this->authorize('delete', $task);
+        $task->delete();
+    return response()->noContent();
+}
 
 }
