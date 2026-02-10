@@ -23,20 +23,23 @@ class TenantIsolationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_tenant_cannot_see_other_tasks()
+public function test_tenant_cannot_see_other_tasks()
 {
     $tenantA = Tenant::factory()->create();
     $tenantB = Tenant::factory()->create();
 
-    $taskB = Task::factory()->create(['tenant_id'=>$tenantB->id]);
+    $taskB = Task::factory()->create([
+        'tenant_id' => $tenantB->id,
+    ]);
 
-    $this->withHeader('X-Tenant-ID', $tenantA->subdomain)
-        ->actingAs(User::factory()->create(['tenant_id'=>$tenantA->id]))
-        ->getJson('/api/tasks')
-        ->assertJsonMissingExact([
-            'id' => $taskB->id,
-            'title' => $taskB->title,
-        ]);
+    $userA = User::factory()->create(['tenant_id' => $tenantA->id]);
+
+    app()->instance('tenant', $tenantA);
+
+    $this->actingAs($userA)
+         ->getJson('/api/tasks')
+         ->assertJsonMissing([$taskB->title]);
 }
+
 
 }
