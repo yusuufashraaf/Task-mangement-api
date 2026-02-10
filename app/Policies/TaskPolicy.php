@@ -21,6 +21,7 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
+        if($user->tenant_id !== $task->tenant_id) return false;
             if ($user->role === 'admin') return true;
         return $task->created_by == $user->id || $task->assigned_to == $user->id;
     }
