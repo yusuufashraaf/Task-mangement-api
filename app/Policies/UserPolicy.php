@@ -44,7 +44,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->role === 'admin' && $user->tenant_id === $target->tenant_id;
+        return $user->role === 'admin' && $user->tenant_id === $model->tenant_id;
     }
 
     /**
